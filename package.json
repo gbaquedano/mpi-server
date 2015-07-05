@@ -1,0 +1,30 @@
+{
+  "name": "mpi-server",
+  "version": "1.0.1",
+  "description": "Servidor para aplicación MPI",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.13.0",
+    "serve-static": "^1.10.0",
+    "socket.io": "^1.3.5"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gbaquedano/mpi-server.git"
+  },
+  "keywords": [
+    "mpi",
+    "ur"
+  ],
+  "author": "Gabriel Baquedano",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gbaquedano/mpi-server/issues"
+  },
+  "homepage": "https://github.com/gbaquedano/mpi-server"
+}
