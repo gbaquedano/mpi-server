@@ -7,10 +7,11 @@ var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var os = require('os');
 
-io.on('connection',function(d){
-        console.log('Test:' + d);
-        d.on('test',function(r){
-                console.log('Event test' + r);
+io.on('connection',function(socket){
+        console.log('Conexión establecida:' + socket);
+        socket.on('sensordata',function(r){
+                console.log('New sensor data:' + r);
+                io.emit('sensordata', r);
         });
 });
 
@@ -23,3 +24,9 @@ app.use('/scripts',serveStatic(__dirname + '/scripts'))
 app.use('/css',serveStatic(__dirname + '/css'))
 app.use('/fonts',serveStatic(__dirname + '/fonts'))
 app.use('/img',serveStatic(__dirname + '/img'))
+
+
+
+
+
+
