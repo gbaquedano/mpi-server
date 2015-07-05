@@ -1,0 +1,67 @@
+<script src="socket.io/socket.io.js"></script>
+<script src="scripts/gauge.min.js"></script>
+<script src="scripts/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="css/style.css">
+<script>
+var init = false;
+var flagsReady = [];
+var socket = io.connect();
+
+function setReady(i){
+	i.onready = null;
+	flagsReady.push(i);
+	if(flagsReady.length >= 4 && !init){
+		init = true;
+		inicializa();
+	}
+}
+
+function inicializa(){
+  var g = Gauge.Collection;
+  console.log(g);
+  socket.on('sensordata', function(datos){
+	Gauge.Collection.get('gaugecpu').setValue(datos.cpu);
+	Gauge.Collection.get('gaugemem').setValue(datos.mem);
+	Gauge.Collection.get('gaugevel').setValue(datos.vel);
+	Gauge.Collection.get('gaugebat').setValue(datos.bat);
+  });
+}
+</script>
+
+<canvas id="gaugecpu" data-type="canv-gauge" 
+		data-title="CPU"
+		data-value="0"
+		data-highlights="0 80 #62ab3d, 80 90 #ddd053, 90 100 #db5427"
+		data-onready="setReady(this);"
+	></canvas>
+<canvas id="gaugemem" data-type="canv-gauge" 
+		data-title="Mem"
+		data-value="0"
+		data-highlights="0 80 #62ab3d, 80 90 #ddd053, 90 100 #db5427"
+		data-onready="setReady(this);"
+	></canvas>
+<canvas id="gaugevel" width="400" height="400"
+		data-type="canv-gauge"
+		data-title="Velocidad"
+		data-min-value="0"
+		data-max-value="100"
+		data-major-ticks="0 10 20 30 40 50 60 70 80 90 100"
+		data-minor-ticks="2"
+		data-stroke-ticks="true"
+		data-units="Km/h"
+		data-value-format="3.0"
+		data-glow="true"
+		data-animation-delay="10"
+		data-animation-duration="400"
+		data-animation-fn="linear"
+		data-colors-needle="#ce7200 #db9136"
+		data-highlights="0 50 #eee, 50 70 #ccc, 70 90 #aaa 90 100 #db5427"
+		data-onready="setReady(this);"
+	></canvas>
+	
+<canvas id="gaugebat" data-type="canv-gauge" 
+		data-title="Bateria"
+		data-value="100"
+		data-highlights="0 20 #db5427, 20 40 #ddd053, 40 100 #62ab3d"
+		data-onready="setReady(this);"
+	></canvas>
