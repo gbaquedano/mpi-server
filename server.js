@@ -21,7 +21,8 @@ setInterval(function(){
 	io.emit('sensordata', 
 	{
 		lat: currLat,
-		lon: currLon
+		lon: currLon,
+		vib: Math.floor(Math.random() * 100) + 1
 	});
 	currLat += 0.00001;
 	currLon += 0.00001;
