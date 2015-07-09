@@ -15,6 +15,18 @@ io.on('connection',function(socket){
         });
 });
 
+var currLat = 42.455204;
+var currLon = -2.454772;
+setInterval(function(){
+	io.emit('sensordata', 
+	{
+		lat: currLat,
+		lon: currLon
+	});
+	currLat += 0.00001;
+	currLon += 0.00001;
+},250);
+
 server.listen(80);
 
 app.get('/', function (req, res) {

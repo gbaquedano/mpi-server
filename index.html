@@ -1,11 +1,26 @@
+<html>
+<head>
 <script src="socket.io/socket.io.js"></script>
 <script src="scripts/gauge.min.js"></script>
 <script src="scripts/jquery.min.js"></script>
-<link rel="stylesheet" type="text/css" href="css/style.css">
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA7ra-C94ufHou_kbU5DkQWcZpRDpnqZeg"></script>
+<link rel="stylesheet" type="text/css" href="css/style.css"></link>
 <script>
+var socket;
+var map;
 var init = false;
 var flagsReady = [];
-var socket = io.connect();
+var pathActual = [];
+var puntosActuales = [];
+var numDatos = 0;
+var polilineaActual = new google.maps.Polyline({
+	geodesic: true,
+    strokeColor: '#FF0000',
+    strokeOpacity: 1.0,
+    strokeWeight: 8,
+    path:[]
+});
+
 
 function setReady(i){
 	i.onready = null;
@@ -20,27 +35,80 @@ function inicializa(){
   var g = Gauge.Collection;
   console.log(g);
   socket.on('sensordata', function(datos){
+  	console.log(datos);
 	Gauge.Collection.get('gaugecpu').setValue(datos.cpu);
 	Gauge.Collection.get('gaugemem').setValue(datos.mem);
 	Gauge.Collection.get('gaugevel').setValue(datos.vel);
 	Gauge.Collection.get('gaugebat').setValue(datos.bat);
+
+	puntosActuales.push([datos.lat, datos.lon]);
+	if(puntosActuales.length >= 4){
+		// Calculamos la media cada 4 puntos y lo añadimos a la polilinea actual
+		var avgLat = 0;
+		var avgLon = 0;
+		for(var i = 0; i < puntosActuales.length; i++){
+			var puntoActual = puntosActuales[i];
+			avgLat += puntoActual[0];
+			avgLon += puntoActual[1];
+		}
+		avgLat = avgLat / puntosActuales.length;
+		avgLon = avgLon / puntosActuales.length;
+		pathActual.push(new google.maps.LatLng(avgLat, avgLon));
+		polilineaActual.setPath(pathActual);
+		console.log(pathActual);
+		puntosActuales = [];
+	}
+	if(pathActual.length >= 5){
+		console.log("Nueva poli");
+		pathActual = [];
+		polilineaActual = new google.maps.Polyline({
+			geodesic: true,
+		    strokeColor: '#00FF00',
+		    strokeOpacity: 1.0,
+		    strokeWeight: 8,
+		    path:[],
+		    map:map
+		});
+	}
   });
 }
-</script>
 
+$(document).ready(function(){
+	var mapOptions = {
+          center: new google.maps.LatLng(42.455204, -2.454772),
+          zoom: 17,
+          mapTypeId: google.maps.MapTypeId.ROADMAP	
+    };
+    map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
+	polilineaActual.setMap(map);
+	//polilineaActual.setPath(pathActual);
+    socket = io.connect();
+
+
+});
+</script>
+</head>
+<body>
+<table class="tablaPrincipal">
+<tr class="rowDashboard">
+<td>
 <canvas id="gaugecpu" data-type="canv-gauge" 
 		data-title="CPU"
 		data-value="0"
 		data-highlights="0 80 #62ab3d, 80 90 #ddd053, 90 100 #db5427"
 		data-onready="setReady(this);"
 	></canvas>
+</td>
+<td>
 <canvas id="gaugemem" data-type="canv-gauge" 
 		data-title="Mem"
 		data-value="0"
 		data-highlights="0 80 #62ab3d, 80 90 #ddd053, 90 100 #db5427"
 		data-onready="setReady(this);"
 	></canvas>
-<canvas id="gaugevel" width="400" height="400"
+</td>
+<td>
+<canvas id="gaugevel" height="300" width="300"
 		data-type="canv-gauge"
 		data-title="Velocidad"
 		data-min-value="0"
@@ -58,10 +126,22 @@ function inicializa(){
 		data-highlights="0 50 #eee, 50 70 #ccc, 70 90 #aaa 90 100 #db5427"
 		data-onready="setReady(this);"
 	></canvas>
-	
+</td>
+<td>
 <canvas id="gaugebat" data-type="canv-gauge" 
 		data-title="Bateria"
 		data-value="100"
 		data-highlights="0 20 #db5427, 20 40 #ddd053, 40 100 #62ab3d"
 		data-onready="setReady(this);"
 	></canvas>
+</td>
+</tr>
+<tr class="rowMaps">
+<td colspan="4">
+	<div id="map-canvas"></div>
+</td>
+</tr>
+</td>
+</table>
+</body>
+</html>

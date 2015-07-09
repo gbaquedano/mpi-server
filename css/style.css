@@ -5,3 +5,23 @@ body {
   -moz-background-size: cover;
   background-size: cover;
 }
+.tablaPrincipal{
+  height:100%;
+  width:100%;
+}
+
+.rowDashboard{
+  text-align: center;
+  height:50%;
+  width:100%;
+  border:solid 1px black;
+}
+.rowMaps{
+  height:50%;
+}
+
+#map-canvas { 
+  height: 100%;
+  margin: 0;
+  Spadding: 0;
+}
