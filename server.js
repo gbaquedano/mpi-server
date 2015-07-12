@@ -15,8 +15,8 @@ io.on('connection',function(socket){
         });
 });
 
-var currLat = 42.455204;
-var currLon = -2.454772;
+var currLat = 41.570112;
+var currLon = 2.261118;
 setInterval(function(){
 	io.emit('sensordata', 
 	{
